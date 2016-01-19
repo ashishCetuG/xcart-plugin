@@ -29,23 +29,4 @@ class Payment extends \XLite\View\AView
         return 'modules/XC/Velocity/payment.tpl';
     }
 
-    /**
-     * Get codes of every state
-     *
-     * @return string
-     */
-    protected function getStateCodes()
-    {
-        $states = \XLite\Core\Database::getRepo('\XLite\Model\State')->findAll();
-        $result = array();
-
-        foreach ($states as $state) {
-            $result[] = array(
-                'id'   => $state->getStateId(),
-                'code' => $state->getCode(),
-            );
-        }
-
-        return json_encode($result);
-    }
 } 

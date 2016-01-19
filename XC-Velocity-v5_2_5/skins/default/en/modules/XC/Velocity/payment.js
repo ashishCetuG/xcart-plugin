@@ -43,16 +43,6 @@ core.bind(
                 zip = $('#billingaddress-zipcode').val();
             }
 
-            if ('' !== addressStateId) {
-                var states = $('#state-codes-data').data('stateCodes');
-                for (var i = 0; i < states.length; i++) {
-                    if (states[i].id == addressStateId ) {
-                        addressState = states[i].code;
-                        break;
-                    }
-                }
-            }
-
             var cardInfo = {
                 number:         box.find('#cc_number').val(),
                 cardtype:       box.find('#card_type').val(),        
@@ -60,14 +50,13 @@ core.bind(
                 expMonth:       box.find('#cc_expire_month').val(),
                 expYear:        box.find('#cc_expire_year').val(),
                 addressCity:    city,
+				addressState:   addressStateId,
                 addressCountry: country,
                 addressLine1:   address,
                 addressZip:     zip,
                 name:           firstname + ' ' + lastname
             }
-            if ('' !== addressState && 2 >= addressState.length) {
-                cardInfo.addressState = addressState;
-            }
+
             cardInfoEc = base64_encode(JSON.stringify(cardInfo));
             $('#token').val(cardInfoEc);
             $('form.place').submit();

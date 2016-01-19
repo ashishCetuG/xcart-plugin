@@ -11,7 +11,6 @@
  * @link      http://nabvelocity.com/
  */
 
-
 namespace XLite\Module\XC\Velocity\Model\Payment\Processor;
 
 /**
@@ -227,10 +226,18 @@ class Velocity extends \XLite\Model\Payment\Base\Online
                 'EmployeeId'   => '11'
             ));
 
+        } catch (Exception $e) {
+            $this->setDetail('error_message', $e->getMessage(), 'Velocity error message');
+            \XLite\Core\TopMessage::addError(static::t($e->getMessage()));
+        }
+        
+        if (is_array($response) && isset($response['Status']) && $response['Status'] == 'Successful') {
+
             $xml = \VelocityXmlCreator::authorizeandcaptureXML(array(  
                 'amount'       => $this->transaction->getValue(),
-                'avsdata'      => $avsData, 
-                'carddata'     => $cardData,
+                'avsdata'      => $avsData,
+                'token'        => $response['PaymentAccountDataToken'], 
+                'order_id'     => $this->getOrder()->getOrderId(),
                 'entry_mode'   => 'Keyed',
                 'IndustryType' => 'Ecommerce',
                 'Reference'    => 'xyz',
@@ -239,21 +246,14 @@ class Velocity extends \XLite\Model\Payment\Base\Online
 
             $req = $xml->saveXML();
             $obj_req = serialize($req);
-
-        } catch (Exception $e) {
-            $this->setDetail('error_message', $e->getMessage(), 'Velocity error message');
-            \XLite\Core\TopMessage::addError(static::t($e->getMessage()));
-        }
-        
-        if (is_array($response) && isset($response['Status']) && $response['Status'] == 'Successful') {
-
+            
             /* Request for the authrizeandcapture transaction */
             try {
                 $cap_response = $velocityProcessor->authorizeAndCapture( array(
                     'amount'       => $this->transaction->getValue(), 
                     'avsdata'      => $avsData,
                     'token'        => $response['PaymentAccountDataToken'], 
-                    'order_id'     => '1526363',//$this->getOrder()->getOrderNumber(),
+                    'order_id'     => $this->getOrder()->getOrderId(),
                     'entry_mode'   => 'Keyed',
                     'IndustryType' => 'Ecommerce',
                     'Reference'    => 'xyz',

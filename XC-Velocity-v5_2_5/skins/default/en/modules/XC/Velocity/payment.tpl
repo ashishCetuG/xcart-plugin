@@ -11,6 +11,5 @@
 
 <div class="velocity-widget">
     <input type="hidden" name="token" id="token" value="" class="token"/>
-    <div style="display: none" id="state-codes-data" data-state-codes="{getStateCodes()}"></div>
     <widget class="\XLite\View\CreditCard" />
 </div>
